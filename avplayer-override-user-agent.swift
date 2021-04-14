@@ -4,7 +4,7 @@ import AVKit
 
 let audioUrl = "https://api.livewire.io/reflections/68b6d33a70c0473aac6b00573449b2a9.mp3"
 let player = AVPlayer()
-let customLoaderDelegate = CustomLoaderDelegate(userAgent: "Apache-HttpClient")
+let customLoaderDelegate = CustomLoaderDelegate(userAgent: "MyPodcastApp/1.5 iOS https://mypodcastapp.example.com/")
 
 struct ContentView: View {
     var body: some View {
