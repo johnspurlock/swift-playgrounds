@@ -12,7 +12,7 @@ struct ContentView: View {
             // Example using the most basic invocation of playing audio, no user-agent specified
             Button("Default AV Player") {
                 player.replaceCurrentItem(with: AVPlayerItem(url: URL(string: audioUrl)!))
-                player.play() // "AppleCoreMedia"
+                player.play() // "Apple Core Media"
             }.padding()
        
             // Example using a custom resource loader, can set the user-agent
@@ -21,7 +21,7 @@ struct ContentView: View {
                 let asset = AVURLAsset(url: URL(string: "custom-\(audioUrl)")!)
                 asset.resourceLoader.setDelegate(customLoaderDelegate, queue: .global(qos: .default))
                 player.replaceCurrentItem(with: AVPlayerItem(asset: asset))
-                player.play() // "Apache-HttpClient"
+                player.play() // "My Podcast App"
             }.padding()
         }
     }
