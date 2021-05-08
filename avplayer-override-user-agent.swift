@@ -5,7 +5,13 @@ import AVKit
 // Demonstrates the difficulty of setting a custom User-Agent when using Apple's AVPlayer
 
 // These examples all start playing an mp3 at a given url without pre-downloading
-// Similar to Apple Podcast's behavior when hitting the play icon on /undownloaded/ episodes
+// Similar to Apple Podcast's behavior when hitting the play icon on _undownloaded_ episodes
+
+// You can run this yourself (even if you are not a developer) by downloading Apple's free Playground app for Mac or iOS, and copying and pasting this into a new playground
+
+// Video of the demo running: https://mobile.twitter.com/johnspurlock/status/1390835472822374404
+
+// MARK: - Demo setup
 
 // This url supports HTTP Range requests
 let audioUrl = "https://api.livewire.io/reflections/68b6d33a70c0473aac6b00573449b2a9.mp3?noip"
@@ -19,9 +25,10 @@ let myUserAgent = "MyPodcastApp/1.5 iOS https://mypodcastapp.example.com/"
 // standard player used in all examples
 let player = AVPlayer()
 
+// used in example 3, the "documented API" example
 let customLoaderDelegate = CustomLoaderDelegate(userAgent: myUserAgent)
 
-
+// UI for the demo
 struct ContentView: View {
     var body: some View {
         
@@ -84,7 +91,6 @@ struct ContentView: View {
 }
 
 // MARK: - Additional code to support Example 3 (custom AVAssetResourceLoaderDelegate)
-
 
 // Helper class to handle loading of a custom asset url.
 // This shows how the underlying http calls can be completely customized by the app at this point.
@@ -170,3 +176,53 @@ func fetch(url: URL, userAgent: String, onData: @escaping (Data) -> ()) {
 
 // run the playground
 PlaygroundPage.current.setLiveView(ContentView())
+
+// MARK: - More information
+
+/*
+
+ Here are the http requests that AVPlayer makes when playing an URL asset (and setting AVURLAssetHTTPHeaderFieldsKey):
+ 
+ First:
+  - requests the first two bytes to determine if the server supports range requests
+  - never uses the response for playback
+
+     GET https://mediahost.com/path/to/audio.mp3
+     accept: *∕*
+     accept-encoding: gzip
+     accept-language: en-us
+     range: bytes=0-1
+     user-agent: MyPodcastApp/1.5 iOS https://mypodcastapp.example.com/
+     x-playback-session-id: C383BAE7-086D-40C2-8439-3F687785CB58
+
+ If the server supports range requests (ie the server returns 206 with the appropriate Content-Range, Content-Length, and body):
+   - requests the media using one or more range requests
+   - uses the response for playback
+ 
+     GET https://mediahost.com/path/to/audio.mp3
+     accept: *∕*
+     accept-encoding: gzip
+     accept-language: en-us
+     range: range: bytes=0-34415
+     user-agent: MyPodcastApp/1.5 iOS https://mypodcastapp.example.com/
+     x-playback-session-id: C383BAE7-086D-40C2-8439-3F687785CB58
+ 
+ If the server does not support range requests (ie it returns 200 with the full body for the intitial request or otherwise fails)
+  - re-requests the media using a single non-range fallback request
+  - uses the response for playback
+ 
+     GET https://mediahost.com/path/to/audio.mp3
+     accept: *∕*
+     accept-encoding: gzip
+     accept-language: en-us
+     icy-metadata: 1
+     user-agent: AppleCoreMedia/1.0.0.18E182 (iPad; U; CPU OS 14_5 like Mac OS X; en_us)
+     x-playback-session-id: C383BAE7-086D-40C2-8439-3F687785CB58
+ 
+ Note that:
+  - the custom header set via AVURLAssetHTTPHeaderFieldsKey is only sent for range requests - if the server does not support it, the fallback request used for content playback still sends AppleCoreMedia!
+  - if the AVURLAssetHTTPHeaderFieldsKey is not set, it sends AppleCoreMedia for all requests
+  - x-playback-session-id can be used to determine a single client play request
+  - the fallback request includes a request for shoutcast metadata, presumably to avoid another request if the url happens to be a shoutcast stream
+ 
+ */
