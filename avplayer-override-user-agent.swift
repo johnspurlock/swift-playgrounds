@@ -203,7 +203,7 @@ PlaygroundPage.current.setLiveView(ContentView())
      accept: *∕*
      accept-encoding: gzip
      accept-language: en-us
-     range: range: bytes=0-34415
+     range: bytes=0-34415
      user-agent: MyPodcastApp/1.5 iOS https://mypodcastapp.example.com/
      x-playback-session-id: C383BAE7-086D-40C2-8439-3F687785CB58
  
