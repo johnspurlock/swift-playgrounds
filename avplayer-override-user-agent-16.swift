@@ -11,7 +11,7 @@ import AVKit
 
 // (Running it in the Swift Playgrounds app will fail, as that app has not been updated with the new sdks yet)
 
-// Video of the demo running: https://TODO
+// Video of the demo running: https://twitter.com/johnspurlock/status/1533969528039821312
 
 // MARK: - Demo setup
 
